@@ -4,7 +4,7 @@
 
 ## Instalación
 
-Para el uso de este programa, se requiere la instalación previa de Aircrack-ng; así como se entiende un uso básico del mismo, puesto que es necesario inicar la tarjeta en modo de red para el uso de esta aplicativo.
+Para el uso de este programa, se requiere la instalación previa de Aircrack-ng; así como se entiende un uso básico del mismo, puesto que es necesario inicar la tarjeta en modo de red para el uso de este aplicativo.
 
 Para instalar KidStealer, recomendamos ejecutar los siguientes comandos:
 
